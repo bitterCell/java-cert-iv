@@ -14,7 +14,7 @@ import java.sql.SQLException;
  *
  * @author Santi Ruiz
  * @author Julie Ruiz 
- * ADD YOUR NAME HERE
+ * @author Amos Chamberlain
  * @version 1.0 Initial version
  * @version 2.0 Updated to improve setting of highscore
  */
@@ -37,25 +37,98 @@ public class GameDetails implements Serializable {
  
     //no arg constructor
     public GameDetails() throws Exception {
-        //TODO
-
+        this(new UserDetails(), new GameSettings());
     }
 
     //all args constructor
     public GameDetails(UserDetails user, GameSettings gameSettings) throws Exception {
-
+        this.userDetails = user;
+        this.gameSettings = gameSettings;
         //TODO
         resetTheScoringDetails();
     }
 
     //Getters and Setters
-    //TODO
+
+    public UserDetails getUserDetails() {
+        return userDetails;
+    }
+
+    public void setUserDetails(UserDetails userDetails) {
+        this.userDetails = userDetails;
+    }
+
+    public GameSettings getGameSettings() {
+        return gameSettings;
+    }
+
+    public void setGameSettings(GameSettings gameSettings) {
+        this.gameSettings = gameSettings;
+    }
+
+    public int getHighScore() {
+        return highScore;
+    }
+
+    public void setHighScore(int highScore) {
+        this.highScore = highScore;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getShipsDestroyed() {
+        return shipsDestroyed;
+    }
+
+    public void setShipsDestroyed(int shipsDestroyed) {
+        this.shipsDestroyed = shipsDestroyed;
+    }
+
+    public int getShotsFired() {
+        return shotsFired;
+    }
+
+    public void setShotsFired(int shotsFired) {
+        this.shotsFired = shotsFired;
+    }
+
+    public boolean isNewHighScore() {
+        return newHighScore;
+    }
+
+    public void setNewHighScore(boolean newHighScore) {
+        this.newHighScore = newHighScore;
+    }
+    
+    
+    
     //toString method
     @Override
     //TODO
     public String toString() {
         StringBuilder inStringBuilder = new StringBuilder();
-        //TODO
+        inStringBuilder.append(super.toString());
+        inStringBuilder.append(" = [userDetails:");
+        inStringBuilder.append(this.userDetails);
+        inStringBuilder.append(",\n[gameSettings:");
+        inStringBuilder.append(this.gameSettings);
+        inStringBuilder.append(",\n[highScore:");
+        inStringBuilder.append(this.highScore);
+        inStringBuilder.append(", [score:");
+        inStringBuilder.append(this.score);
+        inStringBuilder.append(", [shipsDestroyed:");
+        inStringBuilder.append(this.shipsDestroyed);
+        inStringBuilder.append(", [shotsFired:");
+        inStringBuilder.append(this.shotsFired);
+        inStringBuilder.append(", [newHighScore:");
+        inStringBuilder.append(this.newHighScore);
+        inStringBuilder.append("]");
         return inStringBuilder.toString();
     }
 
@@ -64,9 +137,15 @@ public class GameDetails implements Serializable {
     @Override
     public boolean equals(Object obj) {
         //objects are equal if equal userDetails and gameSettings objects
+        if ((obj instanceof GameDetails)) {
+            return false;
+        }
+        
         boolean result = false;
-
-        //TODO
+        GameDetails gameDetails = (GameDetails) obj;
+        
+        result = gameDetails.getUserDetails().equals(this.userDetails) && gameDetails.getGameSettings().equals(this.gameSettings);
+        
         return result;
     }
 

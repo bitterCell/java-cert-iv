@@ -14,6 +14,7 @@ package dao;
  * Company: TAFE SA</p>
  *
  * @author Santi Ruiz
+ * @author Amos Chamberlain
  * @version 1.0
  */
 import controller.MyLogger;
@@ -88,6 +89,7 @@ public class GameDetailsDAOText extends SpaceInvadersDAOText {
         File tempHighScoresFile;
         //Handle to read existing highscores file
         BufferedReader userHighScoresFile;
+        StringTokenizer tokenizer;
         //Keep track of whether we need to add as a new entry
         boolean needToAddNewEntry = true;
         // if we get to the end of the logic and the delete of the temp file was successfull then this will become true
@@ -104,29 +106,42 @@ public class GameDetailsDAOText extends SpaceInvadersDAOText {
         try {
             //Connect to existing user highscore file
             userHighScoresFile = getUserHighScoresInputConnection();
-
-            //Pseudocode for the processing logic for each line in the file is provided as follows
-            //read first line of file
-            //While we have a line successfully go on to process that line
-            //
-            //  Extract the components of the line just read from the csv file (userName,moveSpeed,firingInterval,highScoreInFile)
-            //
-            //  if (userName & moveSpeed & firingInterval read from the file = the data in the gameDetails object passed in) then
-            //      set needToAddNewEntry to false
-            //      if (highScoreInGameDetailsObject > highScoreInFile) then
-            //       write the line userName,moveSpeed,firingInterval,highScoreInGameDetailsObject to the temp file
-            //      otherwise
-            //       write the line userName,moveSpeed,firingInterval,highScoreInFile to the temp file
-            //      endif
-            //  otherwise
-            //      write the line userName,moveSpeed,firingInterval,highScoreInFile to the temp file
-            //  endif
-            //  read the next line from the file
-            //EndWhile
-            //
-            //TODO
-            //close the original fle ready to do the file naming changes
+            
+            aLine = userHighScoresFile.readLine();
+            while (!(aLine == null)) {
+                // Extract the components of the line just read from the csv file
+                tokenizer = new StringTokenizer(aLine, ",");
+                userName = tokenizer.nextToken();
+                moveSpeed = Double.parseDouble(tokenizer.nextToken());
+                firingInterval = Integer.parseInt(tokenizer.nextToken());
+                highScoreInFile = Integer.parseInt(tokenizer.nextToken());
+                
+                if (userName.equals(gameDetails.getUserDetails().getUserName())
+                    && moveSpeed == gameDetails.getGameSettings().getMoveSpeed()
+                    && firingInterval == gameDetails.getGameSettings().getFiringInterval()) {
+                    needToAddNewEntry = false;
+                    if (highScoreInGameDetailsObject > highScoreInFile) {
+                        tempHighScoreFilePW.println(userName + "," 
+                        + moveSpeed + ","
+                        + firingInterval + ","
+                        + highScoreInGameDetailsObject);
+                    } else {
+                        tempHighScoreFilePW.println(userName + "," 
+                        + moveSpeed + ","
+                        + firingInterval + ","
+                        + highScoreInFile);
+                    }
+                } else {
+                    tempHighScoreFilePW.println(userName + "," 
+                        + moveSpeed + ","
+                        + firingInterval + ","
+                        + highScoreInFile);
+                }
+                aLine = userHighScoresFile.readLine();
+            }
+            
             userHighScoresFile.close();
+            
         } catch (FileNotFoundException e) {
             Logger.getLogger(MyLogger.LOGGER_NAME).log(Level.INFO, "High Score CSV does not exist , will be created...");
         }

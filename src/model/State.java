@@ -1,7 +1,7 @@
 package model;
 
 /**
- * POssible states of an Entity
+ * Possible states of an Entity
  * @author sruiz
  */
 

@@ -13,11 +13,12 @@ package model;
  *
  * @author Santi Ruiz
  * @author Julie Ruiz
- * ADD YOUR NAME HERE
+ * @author Amos Chamberlain
  * @version 1.0 - Initial Version
  * @version 2.0 - Changed collision checking to use new version of Entity Collision check
  */
 import java.awt.Graphics2D;
+import java.util.Set;
 import model.events.EntityDiedEvent;
 import model.events.EntityEventListener;
 import model.events.EntityHitEvent;
@@ -51,8 +52,10 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
      * @param removeEntities
      */
     public EntityListArray() {
-        //TODO
-
+        this.entities = new Entity[MAX_SIZE];
+        this.removeEntities = new Entity[MAX_SIZE];
+        
+        this.numEntities = 0;
     }
 
     /**
@@ -60,7 +63,11 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
      */
     @Override
     public void clear() {
+        this.entities = new Entity[MAX_SIZE];
+        this.removeEntities = new Entity[MAX_SIZE];
         
+        this.numEntities = 0;
+        this.numRemoveEntities = 0;
     }
 
     /**
@@ -70,9 +77,13 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
      */
     @Override
     public void add(Entity e) {
-        //TODO
+        if (this.numEntities < this.MAX_SIZE) {
+            this.entities[numEntities] = e;
+        numEntities++;
         // We make sure the array gets told about events on each of its entities
+        
         e.addEntityEventListener(this);
+        }
     }
 
     /**
@@ -85,8 +96,13 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
         //loop through each entity in the array entities and
         //Increase the speed of all members of the array by a certain percentage
         //using setHorizontalMovement and setVerticalMovement
-
-        //TODO
+        
+        for (int i = 0; i < this.numEntities; i++) {
+            this.entities[i].setHorizontalMovement(this.entities[i].getHorizontalMovement()
+                + this.entities[i].getHorizontalMovement() * (percentIncr / 100));
+            this.entities[i].setVerticalMovement(this.entities[i].getVerticalMovement()
+                + this.entities[i].getVerticalMovement() * (percentIncr / 100));
+        }
     }
 
     /**
@@ -97,14 +113,19 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
     @Override
     public void updateState(long delta) {
         //loop through each entity in the array entities and updateState
-        //TODO
+        for (int i = 0; i < this.numEntities; i++) {
+            this.entities[i].updateState(delta);
+        }
 
         // If after all the moving (for whatever reason) the entity needs to be
         // removed from the array then it would have been added to the removeEntities array and now
         // need to be removed.
         // Loop through each entity in the removeEntities array and remove the entity from the current
         // EntitListArray object by calling this.remove
-        //TODO
+        
+        for (int i = 0; i < this.numRemoveEntities; i++) {
+            this.remove(this.removeEntities[i]);
+        }
         // clear the removeEntities array by creating a new array of removeEntities
         this.removeEntities = new Entity[MAX_SIZE];
         this.numRemoveEntities = 0;
@@ -118,7 +139,10 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
     @Override
     public void draw(Graphics2D g) {
         //loop through each entity in the array entities and draw
-        //TODO
+        
+        for (int i = 0; i < this.numEntities; i++) {
+            this.entities[i].draw(g);
+        }
 
     }
 
@@ -130,7 +154,11 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
     @Override
     public void moveAndDraw(long delta, Graphics2D g) {
         //loop through each entity in the array entities and updateState and draw
-        //TODO
+        
+        for (int i = 0; i < this.numEntities; i++) {
+            this.entities[i].updateState(delta);
+            this.entities[i].draw(g);
+        }
     }
 
     /**
@@ -146,7 +174,17 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
         //if one of the entities in the list collides with the entity 'other'
         //return the entity it collides with.
         //Note: need to make use of the Entity class collidesWith method
-        //TODO
+//        for (Entity e : this.entities) {
+//            if (other.collidesWith(e)) {
+//                return e;
+//            }
+//        }
+
+        for (int i = 0; i < this.numEntities; i++) {
+            if (this.entities[i].collidesWith(other)) {
+                return this.entities[i];
+            }
+        }
         return null;
     }
 
@@ -158,8 +196,10 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
     @Override
     public void addEntityEventListener(EntityEventListener l) {
 
-        //loop through each entity in the array entities and addEntityEventListener l
-        //TODO
+        //loop through each entity in the array entities and addEntityEventListener l        
+        for (int i = 0; i < this.numEntities; i++) {
+            this.entities[i].addEntityEventListener(l);
+        }
     }
 
     /**
@@ -168,7 +208,7 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
      * @param e The entity to remove
      */
     @Override
-    public void remove(Entity e) {
+    public void remove(Entity e) { // D
         //create a newArray of Entity
         Entity[] newArray = new Entity[MAX_SIZE];
         //count the numNewEntries
@@ -180,10 +220,31 @@ public class EntityListArray implements EntityListInterface, EntityEventListener
         //loop through each entity in the array entities
         //if the entity is not equal to e then add the entity to the newArray
         //and increment numNewEntries
-        //TODO
+        
+//        for (Entity i : this.entities) {
+//            // 何か？？？これは何ですか？？？
+//            if (i == null) {
+//                break;
+//            }
+//            if (!e.equals(i)) {
+//                newArray[newNumEntities] = i;
+//                System.out.println();
+//                System.out.println("newArray[" + newNumEntities + "] = " + i);
+//            newNumEntities++;
+//            }
+//        }
+        
+        
+        for (int i = 0; i < this.numEntities; i++) {
+            if (!this.entities[i].equals(e)) {
+                newArray[newNumEntities] = this.entities[i];
+                newNumEntities++;
+            }
+        }
         //set the entities array to the newArray
         //set numEntities to newNumEntities
-        //TODO
+        this.entities = newArray;
+        this.numEntities = newNumEntities;
     }
 
     /**
